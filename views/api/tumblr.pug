@@ -1,0 +1,52 @@
+extends ../layout
+
+block content
+  .pb-2.mt-2.mb-4.border-bottom
+    h2
+      i.fab.fa-tumblr-square.fa-sm.me-2
+      | Tumblr API
+
+  .btn-group.mb-4.d-flex(role='group')
+    a.btn.btn-primary.w-100(href='https://www.tumblr.com/docs/en/api/v2', target='_blank')
+      i.far.fa-check-square.fa-sm.me-2
+      | API Docs
+
+  .card.text-white.bg-success.mb-4
+    .card-header
+      h6.panel-title.mb-0 Your Profile
+    .card-body.text-dark.bg-white
+      .row
+        .col-8
+          h5 Name: #{ userInfo.name }
+          ul.list-inline
+            li.list-inline-item
+              i.fas.fa-users.fa-sm.me-2
+              | Following: #{ userInfo.following }
+            li.list-inline-item
+              i.far.fa-heart.fa-sm.me-2
+              | Likes: #{ userInfo.likes }
+
+  .card.text-white.bg-primary.mb-4
+    .card-header
+      h6.panel-title.mb-0 Blog Lookup Example
+    .card-body.text-dark.bg-white
+      .row
+        .col-8
+          if blog.avatar && blog.avatar.length > 0
+            img(src=blog.avatar[0].url, alt='Avatar', width=50, height=50, style='float: left; margin-right: 10px')
+          h4
+            a(href=blog.url, target='_blank') #{ blog.name }
+          h6 #{ blog.title } | #{ blog.description }
+          br
+          ul.list-inline
+            li.list-inline-item
+              i.far.fa-heart.fa-sm.me-2
+              | Likes: #{ blog.likes }
+            li.list-inline-item
+              i.fas.fa-file-alt.fa-sm.me-2
+              | Posts: #{ blog.posts }
+            li.list-inline-item
+              | Latest Post: #{ new Date(blog.updated * 1000).toLocaleString() }
+          h4 Latest Photo Post
+          each photo in photoset
+            img.item(src=photo.original_size.url)

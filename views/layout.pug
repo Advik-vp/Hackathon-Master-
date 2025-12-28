@@ -1,0 +1,82 @@
+doctype html
+html.h-100(lang='en')
+  head
+    meta(charset='utf-8')
+    meta(http-equiv='X-UA-Compatible', content='IE=edge')
+    meta(name='viewport', content='width=device-width, initial-scale=1.0')
+    meta(name='csrf-token', content=_csrf)
+    //- Facebook App ID
+    meta(property='fb:app_id', content=FACEBOOK_ID)
+
+    title #{ title } - Hackathon Starter
+    link(rel='shortcut icon', href='/favicon.ico')
+    //link(rel='stylesheet', href='/css/bootstrap.min.css')
+    link(rel='stylesheet', href='/css/main.css')
+    link(rel='stylesheet', href='https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.css')
+    block head
+
+  body.d-flex.flex-column.h-100
+    include partials/header
+
+    .flex-shrink-0
+      .container.mt-3
+        include partials/flash
+        block content
+
+    include partials/footer
+
+    script(src='/js/lib/jquery.min.js')
+    script(src='/js/lib/bootstrap.min.js')
+    script(src='/js/main.js')
+    script(src='https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.js')
+
+    script(type='text/javascript').
+      window.cookieconsent.initialise({
+        palette: {
+          popup: {
+            background: '#f8f9fa',
+          },
+          button: {
+            background: '#343a40',
+          },
+        },
+        position: 'bottom-right',
+        content: {
+          href: '/privacy-policy.html',
+        },
+      });
+
+    //- Google Analytics  GA4
+    if GOOGLE_ANALYTICS_ID
+      script(async, src=`https://www.googletagmanager.com/gtag/js?id=${GOOGLE_ANALYTICS_ID}`)
+      script.
+        window.dataLayer = window.dataLayer || [];
+        function gtag() {
+          dataLayer.push(arguments);
+        }
+        gtag('js', new Date());
+        gtag('config', '#{GOOGLE_ANALYTICS_ID}');
+
+    //- Facebook Pixel Code
+    if FACEBOOK_PIXEL_ID
+      script.
+        !(function (f, b, e, v, n, t, s) {
+          if (f.fbq) return;
+          n = f.fbq = function () {
+            n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments);
+          };
+          if (!f._fbq) f._fbq = n;
+          n.push = n;
+          n.loaded = !0;
+          n.version = '2.0';
+          n.queue = [];
+          t = b.createElement(e);
+          t.async = !0;
+          t.src = v;
+          s = b.getElementsByTagName(e)[0];
+          s.parentNode.insertBefore(t, s);
+        })(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
+        fbq('init', '#{FACEBOOK_PIXEL_ID}');
+        fbq('track', 'PageView');
+      noscript
+        img(height='1', width='1', style='display: none', src=`https://www.facebook.com/tr?id=${FACEBOOK_PIXEL_ID}&ev=PageView&noscript=1`)

@@ -1,0 +1,163 @@
+extends ../layout
+
+block content
+  .pb-2.mt-2.mb-4.border-bottom
+    h3 Profile Information
+
+  form(action='/account/profile', method='POST')
+    input(type='hidden', name='_csrf', value=_csrf)
+    .form-group.row
+      label.col-md-3.col-form-label.font-weight-bold.text-right(for='email') Email
+      .col-md-7
+        input#email.form-control(type='email', name='email', value=user.email, autocomplete='email', required)
+      .offset-sm-3.col-md-7.pl-3.mb-2
+        if user.emailVerified
+          .text-success.font-italic
+            | Verified
+        else
+          .text-danger.font-italic
+            | Unverified: &nbsp;
+            a(href='/account/verify') Send verification email
+    .form-group.row
+      label.col-md-3.col-form-label.font-weight-bold.text-right(for='name') Name
+      .col-md-7.mt-2
+        input#name.form-control(type='text', name='name', value=user.profile.name, autocomplete='name')
+    .form-group.row
+      label.col-md-3.col-form-label.font-weight-bold.text-right Gender
+      .col-sm-6.mt-2
+        .form-check.form-check-inline
+          input.form-check-input(type='radio', checked=user.profile.gender == 'male', name='gender', value='male', data-toggle='radio')
+          label.form-check-label Male
+
+        .form-check.form-check-inline
+          input.form-check-input(type='radio', checked=user.profile.gender == 'female', name='gender', value='female', data-toggle='radio')
+          label.form-check-label Female
+
+        .form-check.form-check-inline
+          input.form-check-input(type='radio', checked=user.profile.gender == 'other', name='gender', value='other', data-toggle='radio')
+          label.form-check-label Other
+    .form-group.row
+      label.col-md-3.col-form-label.font-weight-bold.text-right(for='location') Location
+      .col-md-7.mb-2
+        input#location.form-control(type='text', name='location', value=user.profile.location, autocomplete)
+    .form-group.row
+      label.col-md-3.col-form-label.font-weight-bold.text-right(for='website') Website
+      .col-md-7.mb-2
+        input#website.form-control(type='text', name='website', value=user.profile.website, autocomplete='url')
+    .form-group.row
+      label.col-md-3.col-form-label.font-weight-bold.text-right Profile Picture
+      .col-sm-4.mb-2
+        img.profile(src=user.profile.picture ? user.profile.picture : user.gravatar(), width='100', height='100')
+    .form-group
+      .offset-sm-3.col-md-7.pl-2
+        button.btn.btn.btn-primary(type='submit')
+          i.fas.fa-pencil.fa-sm.me-2
+          | Update Profile
+
+  .pb-2.mt-2.mb-4.border-bottom
+    h3 Change Password
+
+  form(action='/account/password', method='POST')
+    input(type='hidden', name='_csrf', value=_csrf)
+    .form-group.row
+      label.col-md-3.col-form-label.font-weight-bold.text-right(for='password') New Password
+      .col-md-7.mb-2
+        input#password.form-control(type='password', name='password', autocomplete='new-password', minlength='8', required)
+    .form-group.row
+      label.col-md-3.col-form-label.font-weight-bold.text-right(for='confirmPassword') Confirm Password
+      .col-md-7.mb-2
+        input#confirmPassword.form-control(type='password', name='confirmPassword', autocomplete='new-password', minlength='8', required)
+    .form-group
+      .offset-sm-3.col-md-7.pl-2
+        button.btn.btn-primary(type='submit')
+          i.fas.fa-lock.fa-sm.me-2
+          | Change Password
+
+  .pb-2.mt-2.mb-4.border-bottom
+    h3 Logout Everywhere
+
+  form(action='/account/logout-everywhere', method='POST')
+    input(type='hidden', name='_csrf', value=_csrf)
+    .form-group
+      p.offset-sm-3.col-md-7.pl-2 This will log you out of all devices and locations.
+
+      .offset-sm-3.col-md-7.pl-2
+        button.btn.btn-danger(type='submit')
+          i.fas.fa-sm.me-2.fa-right-from-bracket
+          | Logout everywhere
+
+  .pb-2.mt-2.mb-4.border-bottom
+    h3 Delete Account
+
+  form(action='/account/delete', method='POST', onsubmit='return confirm(\'Are you sure you want to delete your account?\');')
+    .form-group
+      p.offset-sm-3.col-md-7.pl-2 You can delete your account, but keep in mind this action is irreversible.
+      input(type='hidden', name='_csrf', value=_csrf)
+      .offset-sm-3.col-md-7.pl-2
+        button.btn.btn-danger(type='submit')
+          i.far.fa-trash-can.fa-sm.me-2
+          | Delete my account
+
+  .pb-2.mt-2.mb-4.border-bottom
+    h3 Linked Accounts
+  .form-group
+    .offset-sm-3.col-md-7.pl-2
+      if user.discord
+        p.mb-1: a.text-danger(href='/account/unlink/discord') Unlink your Discord account
+      else
+        p.mb-1: a(href='/auth/discord') Link your Discord account
+    .offset-sm-3.col-md-7.pl-2
+      if user.facebook
+        p.mb-1: a.text-danger(href='/account/unlink/facebook') Unlink your Facebook account
+      else
+        p.mb-1: a(href='/auth/facebook') Link your Facebook account
+    .offset-sm-3.col-md-7.pl-2
+      if user.github
+        p.mb-1: a.text-danger(href='/account/unlink/github') Unlink your GitHub account
+      else
+        p.mb-1: a(href='/auth/github') Link your GitHub account
+    .offset-sm-3.col-md-7.pl-2
+      if user.google
+        p.mb-1: a.text-danger(href='/account/unlink/google') Unlink your Google account
+      else
+        p.mb-1: a(href='/auth/google') Link your Google account
+    .offset-sm-3.col-md-7.pl-2
+      if user.microsoft
+        p.mb-1: a.text-danger(href='/account/unlink/microsoft') Unlink your Microsoft account
+      else
+        p.mb-1: a(href='/auth/microsoft') Link your Microsoft account
+    .offset-sm-3.col-md-7.pl-2
+      if user.linkedin
+        p.mb-1: a.text-danger(href='/account/unlink/linkedin') Unlink your LinkedIn account
+      else
+        p.mb-1: a(href='/auth/linkedin') Link your LinkedIn account
+    .offset-sm-3.col-md-7.pl-2
+      if user.quickbooks
+        p.mb-1: a.text-danger(href='/account/unlink/quickbooks') Unlink your QuickBooks account
+      else
+        p.mb-1: a(href='/auth/quickbooks') Link your QuickBooks account
+    .offset-sm-3.col-md-7.pl-2
+      if user.steam
+        p.mb-1: a.text-danger(href='/account/unlink/steam') Unlink your Steam account
+      else
+        p.mb-1: a(href='/auth/steam') Link your Steam account
+    .offset-sm-3.col-md-7.pl-2
+      if user.trakt
+        p.mb-1: a.text-danger(href='/account/unlink/trakt') Unlink your Trakt account
+      else
+        p.mb-1: a(href='/auth/trakt') Link your Trakt account
+    .offset-sm-3.col-md-7.pl-2
+      if user.tumblr
+        p.mb-1: a.text-danger(href='/account/unlink/tumblr') Unlink your Tumblr account
+      else
+        p.mb-1: a(href='/auth/tumblr') Link your Tumblr account
+    .offset-sm-3.col-md-7.pl-2
+      if user.twitch
+        p.mb-1: a.text-danger(href='/account/unlink/twitch') Unlink your Twitch account
+      else
+        p.mb-1: a(href='/auth/twitch') Link your Twitch account
+    .offset-sm-3.col-md-7.pl-2
+      if user.x
+        p.mb-1: a.text-danger(href='/account/unlink/x') Unlink your X account
+      else
+        p.mb-1: a(href='/auth/x') Link your X account

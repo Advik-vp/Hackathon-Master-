@@ -1,0 +1,207 @@
+extends ../layout
+
+block content
+  .pb-2.mt-2.mb-4.border-bottom
+    h2
+      i.fas.fa-map.fa-sm.me-2
+      | Google Maps JavaScript API
+
+  .btn-group.d-flex(role='group')
+    a.btn.btn-primary.w-100(href='https://developers.google.com/maps/documentation/javascript/tutorial', target='_blank')
+      i.far.fa-check-square.fa-sm.me-2
+      | Getting Started
+    a.btn.btn-primary.w-100(href='https://console.developers.google.com/apis/dashboard', target='_blank')
+      i.fas.fa-laptop.fa-sm.me-2
+      | API Console
+
+  br
+  p This example uses custom markers with Font Awesome icons, a custom map control (Center Map), and restricted navigation boundaries.
+
+  .row
+    .col-md-12
+      #map(style='height: 500px')
+
+  script(src=`https://maps.googleapis.com/maps/api/js?key=${google_map_api_key}&libraries=marker&loading=async`)
+  script.
+    let map;
+    let mapLoaded = false;
+
+    class CustomMarker {
+      constructor(position, icon, title) {
+        const markerElement = document.createElement('div');
+        markerElement.className = 'custom-marker';
+
+        const container = document.createElement('div');
+        container.style.position = 'relative';
+        container.style.cursor = 'pointer';
+        container.style.textAlign = 'center';
+
+        // Create pin shape with pseudo-element
+        const pin = document.createElement('div');
+        pin.style.background = 'rgb(231, 167, 149)';
+        pin.style.width = '30px';
+        pin.style.height = '40px';
+        pin.style.borderRadius = '50% 50% 50% 0';
+        pin.style.transform = 'rotate(-45deg)';
+        pin.style.boxShadow = '0 2px 6px rgba(0, 0, 0, 0.73)';
+        pin.style.margin = '0 auto';
+
+        // Container for the icon
+        const iconContainer = document.createElement('div');
+        iconContainer.style.position = 'absolute';
+        iconContainer.style.top = '12px';
+        iconContainer.style.left = '0';
+        iconContainer.style.right = '0';
+
+        const iconElement = document.createElement('i');
+        iconElement.className = `fas ${icon}`;
+        iconElement.style.color = 'rgb(104, 32, 32)';
+        iconElement.style.fontSize = '14px';
+
+        // Add text label below the pin
+        const label = document.createElement('div');
+        label.style.marginTop = '0px'; // Space between pin and text
+        label.style.color = 'rgb(78, 25, 25)';
+        label.style.fontSize = '14px';
+        label.style.fontWeight = 'bold';
+        label.style.whiteSpace = 'nowrap';
+        label.style.textShadow =
+          '-1px -1px 0 #fff,' + // Top-left
+          '1px -1px 0 #fff,' + // Top-right
+          '-1px 1px 0 #fff,' + // Bottom-left
+          '1px 1px 0 #fff'; // Bottom-right
+        label.textContent = title;
+
+        iconContainer.appendChild(iconElement);
+        container.appendChild(pin);
+        container.appendChild(iconContainer);
+        container.appendChild(label);
+        markerElement.appendChild(container);
+
+        return new google.maps.marker.AdvancedMarkerElement({
+          position,
+          content: markerElement,
+          title,
+        });
+      }
+    }
+
+    async function initMap() {
+      if (mapLoaded) return;
+
+      try {
+        map = new google.maps.Map(document.getElementById('map'), {
+          center: { lat: 37.7749, lng: -122.4194 },
+          zoom: 13,
+          maxZoom: 15,
+          minZoom: 10,
+          mapId: 'MapID001',
+          mapTypeId: 'roadmap',
+          gestureHandling: 'cooperative',
+          restriction: {
+            latLngBounds: {
+              north: 37.85,
+              south: 37.7,
+              east: -122.35,
+              west: -122.52,
+            },
+            strictBounds: true,
+          },
+          mapTypeControl: true,
+          mapTypeControlOptions: {
+            style: google.maps.MapTypeControlStyle.DROPDOWN_MENU,
+            position: google.maps.ControlPosition.TOP_RIGHT,
+          },
+          zoomControl: true,
+          zoomControlOptions: {
+            position: google.maps.ControlPosition.RIGHT_CENTER,
+          },
+          scaleControl: true,
+          streetViewControl: true,
+          streetViewControlOptions: {
+            position: google.maps.ControlPosition.RIGHT_TOP,
+          },
+          fullscreenControl: true,
+        });
+
+        const locations = [
+          {
+            position: { lat: 37.7749, lng: -122.4194 },
+            title: 'San Francisco',
+            content: 'The cultural, commercial, and financial center of Northern California',
+            icon: 'fa-city',
+          },
+          {
+            position: { lat: 37.7858, lng: -122.4064 },
+            title: 'Financial District',
+            content: "San Francisco's business and financial hub",
+            icon: 'fa-landmark',
+          },
+          {
+            position: { lat: 37.8019, lng: -122.4189 },
+            title: "Fisherman's Wharf",
+            content: 'Famous waterfront neighborhood with seafood restaurants',
+            icon: 'fa-fish',
+          },
+        ];
+
+        const infoWindow = new google.maps.InfoWindow();
+
+        // Wait for the marker library to load
+        await google.maps.importLibrary('marker');
+
+        locations.forEach((location) => {
+          const marker = new CustomMarker(location.position, location.icon, location.title);
+
+          marker.map = map;
+
+          marker.addEventListener('gmp-click', () => {
+            infoWindow.setContent(`
+              <div style="padding: 10px;">
+                <h3><i class="fas ${location.icon}"></i> ${location.title}</h3>
+                <p>${location.content}</p>
+              </div>
+            `);
+            infoWindow.open({
+              anchor: marker,
+              map,
+            });
+          });
+        });
+
+        const centerControl = document.createElement('div');
+        centerControl.style.backgroundColor = '#fff';
+        centerControl.style.border = '2px solid #fff';
+        centerControl.style.borderRadius = '3px';
+        centerControl.style.boxShadow = '0 2px 6px rgba(0,0,0,.3)';
+        centerControl.style.cursor = 'pointer';
+        centerControl.style.marginTop = '10px';
+        centerControl.style.marginRight = '10px';
+        centerControl.style.padding = '8px';
+        centerControl.style.textAlign = 'center';
+        centerControl.innerHTML = 'Center Map';
+        centerControl.addEventListener('click', () => {
+          map.setCenter({ lat: 37.7749, lng: -122.4194 });
+          map.setZoom(13);
+        });
+
+        map.controls[google.maps.ControlPosition.TOP_RIGHT].push(centerControl);
+        mapLoaded = true;
+      } catch (error) {
+        console.error('Error initializing map:', error);
+      }
+    }
+
+    // Intersection Observer to load map only when visible
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          initMap();
+          observer.disconnect();
+        }
+      });
+    });
+
+    window.addEventListener('load', () => {
+      observer.observe(document.getElementById('map'));
+    });

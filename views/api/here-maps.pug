@@ -1,0 +1,75 @@
+extends ../layout
+
+block content
+  .pb-2.mt-2.mb-4.border-bottom
+    h2
+      i.fas.fa-map-location.me-2
+      | HERE Maps API
+
+  .btn-group.d-flex(role='group')
+    a.btn.btn-primary.w-100(href='https://developer.here.com', target='_blank')
+      i.far.fa-check-square.fa-sm.me-2
+      | HERE Developer Portal
+    a.btn.btn-primary.w-100(href='https://developer.here.com/documentation/map-image/topics/resource-map.html', target='_blank')
+      i.fas.fa-laptop.fa-sm.me-2
+      | Image Map Parameters
+
+  br
+  .pb-2.mt-2
+    h3 Map using Here Interactive Map Service
+  div(style='display: flex; justify-content: center')
+    #map(style='width: 100vw; height: 50vh')
+
+  div(style='display: flex; justify-content: center')
+    | Straight line distance between the Fremont Troll and Seattle Art Museum is&nbsp;
+    #directLineDistance
+    | &nbsp;miles.
+
+  script(src='https://js.api.here.com/v3/3.1/mapsjs-core.js', type='text/javascript', charset='utf-8')
+  script(src='https://js.api.here.com/v3/3.1/mapsjs-service.js', type='text/javascript', charset='utf-8')
+  script(src='https://js.api.here.com/v3/3.1/mapsjs-mapevents.js', type='text/javascript', charset='utf-8')
+  script(src='https://js.api.here.com/v3/3.1/mapsjs-ui.js', type='text/javascript', charset='utf-8')
+  link(rel='stylesheet', type='text/css', href='https://js.api.here.com/v3/3.1/mapsjs-ui.css')
+
+  script.
+    const platform = new H.service.Platform({
+      useHTTPS: true,
+      apikey: '#{apikey}',
+    });
+
+    const defaultLayers = platform.createDefaultLayers();
+    const map = new H.Map(document.getElementById('map'), defaultLayers.vector.normal.map, {
+      zoom: 12,
+      center: { lat: 47.6573676, lng: -122.3126527 },
+    });
+
+    const mapEvents = new H.mapevents.MapEvents(map);
+    const behavior = new H.mapevents.Behavior(mapEvents);
+
+    // Create markers
+    const marker1 = new H.map.Marker({ lat: 47.6516216, lng: -122.3498897 });
+    const marker2 = new H.map.Marker({ lat: 47.6123335, lng: -122.3314332 });
+    const marker3 = new H.map.Marker({ lat: 47.6162956, lng: -122.3555097 });
+    const marker4 = new H.map.Marker({ lat: 47.6205099, lng: -122.3514661 });
+
+    // Create line string for polygon
+    const lineString = new H.geo.LineString();
+    lineString.pushLatLngAlt(47.6516216, -122.3498897);
+    lineString.pushLatLngAlt(47.6123335, -122.3314332);
+    lineString.pushLatLngAlt(47.6162956, -122.3555097);
+    lineString.pushLatLngAlt(47.6205099, -122.3514661);
+
+    // Create polygon
+    const polygon = new H.map.Polygon(lineString, { style: { lineWidth: 2, strokeColor: 'black', fillColor: 'rgba(255, 0, 255, 0.5)' } });
+
+    // Create circle
+    const circle = new H.map.Circle({ lat: 47.6205099, lng: -122.3514661 }, 3000, { style: { strokeColor: 'rgba(0,128,0, 0.6)', lineWidth: 1, fillColor: 'rgba(0, 128, 0, 0.3)' } });
+
+    // Add all objects to the map
+    map.addObjects([marker1, marker2, marker3, marker4, polygon, circle]);
+
+    // Calculate distance
+    const start = marker1.getGeometry();
+    const end = marker2.getGeometry();
+    const distance = (start.distance(end) / 1609.344).toFixed(2);
+    document.getElementById('directLineDistance').innerHTML = distance;

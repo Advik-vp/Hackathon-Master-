@@ -1,0 +1,44 @@
+extends layout
+
+block head
+  if sitekey
+    script(src='https://www.google.com/recaptcha/enterprise.js', async='', defer='')
+
+block content
+  .pb-2.mt-2.mb-4.border-bottom
+    h3 Contact Form
+
+  form#contactForm(method='POST')
+    input(type='hidden', name='_csrf', value=_csrf)
+    if unknownUser
+      .form-group.row.mb-3
+        label.col-md-2.col-form-label.font-weight-bold(for='name') Name
+        .col-md-8
+          input#name.form-control(type='text', name='name', autocomplete='name', autofocus, required)
+      .form-group.row.mb-3
+        label.col-md-2.col-form-label.font-weight-bold(for='email') Email
+        .col-md-8
+          input#email.form-control(type='email', name='email', autocomplete='email', required)
+    .form-group.row.mb-3
+      label.col-md-2.col-form-label.font-weight-bold(for='message') Please describe the issue or your suggestion
+      .col-md-8
+        textarea#message.form-control(name='message', rows='7', autofocus=(!unknownUser).toString(), required)
+    .form-group
+      .offset-md-2.col-md-8.p-1
+        if sitekey
+          #recaptchaWidget.g-recaptcha(data-sitekey=sitekey)
+          span#recaptchaError.text-danger.d-none.mt-2 Please complete the reCAPTCHA before submitting the form.
+        br
+        button#submitBtn.col-md-2.btn.btn-primary(type='submit')
+          i.far.fa-envelope.fa-sm.me-2
+          | Send
+  script.
+    document.getElementById('contactForm').addEventListener('submit', function (event) {
+      const recaptchaError = document.getElementById('recaptchaError');
+      if (typeof grecaptcha !== 'undefined' && !grecaptcha.getResponse()) {
+        event.preventDefault(); // Prevent form submission
+        recaptchaError.classList.remove('d-none');
+      } else {
+        recaptchaError.classList.add('d-none');
+      }
+    });

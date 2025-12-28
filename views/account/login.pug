@@ -1,0 +1,81 @@
+extends ../layout
+
+block content
+  .pb-2.mt-2.mb-4.border-bottom
+    h3 Sign in
+  form(method='POST')
+    input(type='hidden', name='_csrf', value=_csrf)
+    .form-group.row.mb-3
+      label.col-md-3.col-form-label.font-weight-bold.text-right(for='email') Email
+      .col-md-7
+        input#email.form-control(type='email', name='email', placeholder='Email', autofocus, autocomplete='email', required)
+    .form-group.row.mb-3
+      .col-md-3.offset-md-3
+        .form-check
+          input#loginByEmailLink.form-check-input(type='checkbox', name='loginByEmailLink')
+          label.form-check-label(for='loginByEmailLink') Login by Email Link
+    .form-group.row.mb-3.password-group
+      label.col-md-3.col-form-label.font-weight-bold.text-right(for='password') Password
+      .col-md-7
+        input#password.form-control(type='password', name='password', placeholder='Password', autocomplete='current-password', required)
+    .form-group.row
+      .col-md-7.offset-md-3
+        button.col-md-2.btn.btn-primary(type='submit')
+          i.far.fa-user.fa-sm.me-2
+          | Login
+        a.btn.btn-link(href='/forgot') Forgot your password?
+    .form-group.row
+      .col-md-7.offset-md-3.d-grid.gap-2
+        hr
+    .form-group.row
+      .col-md-3.offset-md-3.d-grid.gap-2
+        a.btn.btn-block.btn-google.btn-social(href='/auth/google')
+          i.fab.fa-google.fa-xs
+          | Sign in with Google
+        //- Microsoft branding requirements: https://learn.microsoft.com/en-us/entra/identity-platform/howto-add-branding-in-apps
+        a.btn.btn-block.btn-microsoft.btn-social(href='/auth/microsoft')
+          svg.ms-logo(xmlns='http://www.w3.org/2000/svg', width='32', height='32', viewBox='0 0 21 21', style='margin-right: 10px; vertical-align: middle')
+            rect(x='1', y='1', width='9', height='9', fill='#f25022')
+            rect(x='1', y='11', width='9', height='9', fill='#00a4ef')
+            rect(x='11', y='1', width='9', height='9', fill='#7fba00')
+            rect(x='11', y='11', width='9', height='9', fill='#ffb900')
+          | Sign in with Microsoft
+        a.btn.btn-block.btn-facebook.btn-social(href='/auth/facebook')
+          i.fab.fa-facebook-f.fa-sm
+          | Sign in with Facebook
+        a.btn.btn-block.btn-twitter.btn-social(href='/auth/x')
+          i.fab.fa-x-twitter.fa-sm
+          | Sign in with X
+        a.btn.btn-block.btn-linkedin.btn-social(href='/auth/linkedin')
+          i.fab.fa-linkedin-in.fa-sm
+          | Sign in with LinkedIn
+        a.btn.btn-block.btn-twitch.btn-social(href='/auth/twitch')
+          i.fab.fa-twitch.fa-sm
+          | Sign in with Twitch
+        a.btn.btn-block.btn-github.btn-social(href='/auth/github')
+          i.fab.fa-github.fa-sm
+          | Sign in with GitHub
+        a.btn.btn-block.btn-discord.btn-social(href='/auth/discord')
+          i.fab.fa-discord
+          | Sign in with Discord
+
+  script.
+    document.getElementById('loginByEmailLink').addEventListener('change', function () {
+      const passwordGroup = document.querySelector('.password-group');
+      const passwordInput = document.getElementById('password');
+      if (this.checked) {
+        passwordGroup.style.display = 'none';
+        passwordInput.removeAttribute('required');
+        // Don't clear the password here
+      } else {
+        passwordGroup.style.display = 'flex';
+        passwordInput.setAttribute('required', '');
+      }
+    });
+
+    // Only clear password at form submission if email link is selected
+    document.querySelector('form').addEventListener('submit', function (e) {
+      if (document.getElementById('loginByEmailLink').checked) {
+        document.getElementById('password').value = '';
+      }
+    });

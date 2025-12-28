@@ -1,0 +1,33 @@
+extends ../layout
+
+block content
+  .pb-2.mt-2.mb-4.border-bottom
+    h2
+      i.far.fa-building.fa-sm.me-2
+      | New York Times API
+
+  .btn-group.d-flex(role='group')
+    a.btn.btn-primary.w-100(href='https://developer.nytimes.com/', target='_blank')
+      i.far.fa-check-square.fa-sm.me-2
+      | NYT Developer Network
+    a.btn.btn-primary.w-100(href='https://developer.nytimes.com/apis', target='_blank')
+      i.fas.fa-code-branch.fa-sm.me-2
+      | API Endpoints
+
+  h4 Young Adult Best Sellers
+  table.table.table-striped.table-bordered
+    thead
+      tr
+        th Rank
+        th Title
+        th.hidden-xs Description
+        th Author
+        th.hidden-xs ISBN-13
+    tbody
+      each book in books
+        tr
+          td= book.rank
+          td= book.title
+          td.hidden-xs= book.description
+          td= book.author
+          td.hidden-xs= book.primary_isbn13

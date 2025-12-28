@@ -1,0 +1,44 @@
+extends ../layout
+
+block content
+  .pb-2.mt-2.mb-4.border-bottom
+    h2
+      i.fas.fa-table.fa-sm.me-2(style='color: #1b4a7d')
+      | Google Sheets API
+  h3
+    | API References
+  .btn-group.d-flex(role='group')
+    a.btn.btn-primary.w-100(href='https://github.com/googleapis/google-api-nodejs-client#google-apis-nodejs-client', target='_blank')
+      i.far.fa-check-square.fa-sm.me-2
+      | Getting Started
+    a.btn.btn-primary.w-100(href='https://console.developers.google.com/apis/dashboard', target='_blank')
+      i.fas.fa-laptop.fa-sm.me-2
+      | API Console
+    a.btn.btn-primary.w-100(href='https://www.freecodecamp.org/news/cjn-google-sheets-as-json-endpoint', target='_blank')
+      i.fas.fa-book.fa-sm.me-2
+      | Exposing your Google Sheets
+
+  br
+  h3
+    | Examples
+  p
+  | View data from a Google Spreadsheet at
+  |
+  a(href='https://docs.google.com/spreadsheets/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit#gid=0', target='_blank')
+    | URL
+  p
+  br
+  .pb-2.mt-2.mb-4.border-bottom
+    h4
+      | Values in Google Sheets
+
+  if values.length
+    table(style='width: 100%', border='1')
+      tr
+        each row, i in values
+          tr
+            each cell, j in row
+              if i == 0
+                td(style='font-weight: bold')= cell
+              else
+                td= cell
